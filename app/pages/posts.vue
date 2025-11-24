@@ -12,6 +12,8 @@
     const password = ref('')
     const loading = ref(false)
 
+    const modal_is_open = ref(false)
+
     async function criarPost() {
         loading.value = true
         try{
@@ -74,9 +76,21 @@
         Conteúdos para {{ user?.username || 'Visitante' }}
         </h1>
 
-        <!-- Conditional Buttons -->
+        <UButton @click="modal_is_open = true">Criar Post</UButton>
+        <UModal v-model:open="modal_is_open" title="Criar conteúdo">
+            <template #body class="bg-sky-100">
+                <div class="h-48 m-4 bg-sky-100 rounded flex items-center justify-center">
+                    <span class="text-sky-800">Form POST /posts</span>
+                </div>
+            </template>
+            <template #footer>
+                <UButton label="Cancelar" @click="modal_is_open = false" />
+            </template>
+        </UModal>
+
+
         <template v-if="user">
-        <UButton @click="logout" color="red" variant="soft">
+        <UButton @click="logout" variant="soft" class="bg-red-300">
             Sair
         </UButton>
         </template>
@@ -90,7 +104,6 @@
         <UAlert
             v-if="error"
             icon="i-heroicons-exclamation-triangle"
-            color="red"
             variant="soft"
             title="Erro ao carregar os posts"
             :description="error.message"

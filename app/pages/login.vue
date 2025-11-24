@@ -43,13 +43,13 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     })
 
     tokenCookie.value = data.token
-    toast.add({ title: 'Success', description: 'Login successful!', color: 'green' })
+    toast.add({ title: 'Success', description: 'Login successful!' })
     
     router.push('/posts')
 
   } catch (error: any) {
     const errorMessage = error.data?.non_field_errors?.[0] || 'Username or password incorrect.'
-    toast.add({ title: 'Error', description: errorMessage, color: 'red' })
+    toast.add({ title: 'Error', description: errorMessage})
   } finally {
     loading.value = false
   }
@@ -69,7 +69,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         </UFormField>
 
         <UButton type="submit" :loading="loading" block label="Submit" size="lg" >Entrar</UButton>
-        <UButton to="/posts" variant="link" :padded="false" class="mt-10 bg-green-500 hover:bg-green-600 hover:text-white">Sem login</UButton>
+        <UButton to="/posts" variant="link" :padded="false" class="mt-10 flex justify-center" style="width: 100%;">Sem login</UButton>
       </UForm>
 
       
