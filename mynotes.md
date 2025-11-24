@@ -14,3 +14,23 @@ npx nuxi@latest init frontend
 ```
 npm run dev
 ```
+
+## Pacotes extra:
+* `npm install valibot` (valida os formulários)
+
+## Configurando API
+Dentro do `nuxt.config.ts`:
+```
+runtimeConfig: {
+    public: {
+        apiBase: 'http://http://127.0.0.1:8000/' 
+    }
+}
+```
+
+# ESTILIZANDO
+## `<Ucard>`
+Esse componente vem junto com o módulo __ui__. Utiliza-se a seguinte estrutura:
+ * `<template #header>`;
+ * conteudo do body;
+ * `<template #footer>`.
