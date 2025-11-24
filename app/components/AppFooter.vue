@@ -1,10 +1,5 @@
 <template>
-    <div 
-        style="
-            background-color: aqua;
-            
-        "
-    >
+    <div class="bg-sky-300">
         <slot />
     </div>
 </template>

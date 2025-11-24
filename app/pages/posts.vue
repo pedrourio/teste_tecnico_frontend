@@ -2,6 +2,9 @@
 
 <script setup lang="ts">
     import type { Post } from '../../types/post';
+    import type { User } from '../../types/user';
+
+    const router = useRouter()
 
     const token = useCookie('auth_token')
 
@@ -33,17 +36,56 @@
     const { data: posts, error } = await useFetch<Post[], Error, { results: Post[] }>(`${config.public.apiBase}/posts/`, {
         transform: (response) => response.results
     });
+    const user = ref<User | null>(null);
+
+    
+    if (token.value) {
+        const { data: userData } = await useFetch<User>(`${config.public.apiBase}/users/me/`, {
+        headers: {
+            'Authorization': `Token ${token.value}`
+        },
+        onError: () => {
+            
+            user.value = null;
+        }
+        });
+        if (userData.value) {
+        user.value = userData.value;
+        }
+    }
 
     const route = useRoute()
     const page = route.name
 
+
+
+    function logout() {
+        token.value = null; 
+        router.push('/login'); 
+    }
 
 </script>
 
 
 <template>
     <UContainer class="py-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Posts</h1>
+        <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+        Conteúdos para {{ user?.username || 'Visitante' }}
+        </h1>
+
+        <!-- Conditional Buttons -->
+        <template v-if="user">
+        <UButton @click="logout" color="red" variant="soft">
+            Sair
+        </UButton>
+        </template>
+        <template v-else>
+        <UButton to="/login" color="primary">
+            Login
+        </UButton>
+        </template>
+    </div>
         
         <UAlert
             v-if="error"

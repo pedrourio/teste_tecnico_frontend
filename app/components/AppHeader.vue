@@ -1,13 +1,15 @@
 <template>
-  <div class="bg-green-400 flex flex-row justify-evenly align-middle p-9">
-    <h1 class="text-blue-600">Teste Técnico</h1>
-    <h2>
-      This is an App header
-    </h2>
+  <div class="bg-sky-300 flex flex-row justify-evenly items-center p-9">
+
+    <div class="flex flex-row  items-center justify-evenly bg-white p-2 rounded-[2vw]">
+      <h2 class="text-blue-600">
+        Teste técnico Livon
+      </h2>
+      <img class='w-1/6 'src="../assets/img/livonsaude_logo.jpeg"></img>
+    </div>
     
-    <UButton to="/login" variant="link" :padded="false" class="  bg-green-500 hover:bg-green-600 hover:text-white">
-      Sair
-    </UButton>
+    
 
   </div>
 </template>
+
