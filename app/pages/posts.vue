@@ -1,7 +1,8 @@
 
 
 <script setup lang="ts">
-    import type { Post } from '../../types/post';
+    import { description } from 'valibot';
+import type { Post } from '../../types/post';
     import type { User } from '../../types/user';
 
     const router = useRouter()
@@ -12,23 +13,40 @@
     const password = ref('')
     const loading = ref(false)
 
-    const modal_is_open = ref(false)
+    const isOpen = ref(false)
+
+    const title =  ref('')
+    const description = ref('')
+    const state = reactive({
+        title: title,
+        description: description
+    })
+    
+
+    const toast = useToast()
+    
 
     async function criarPost() {
         loading.value = true
         try{
+            console.log('Sending token:', token.value)
+            const headers = {
+                Authorization: `Token ${token.value}` 
+            }
+            console.log('Request headers:', headers)
             await $fetch(`${config.public.apiBase}/posts/`, {
                 method: 'POST',
-                headers: {
-                    Authorization: `Token ${token.value}` 
-                },
+                headers: headers,
                 body: { 
-                    title : posts.value,
-                    description: posts.value
+                    title : title.value,
+                    description: description.value
                 }
             })
-        }catch(error){
-            alert("Não foi possível realizar o post")
+            isOpen.value = false
+        }catch(error: any){
+            console.error('Error creating post:', error)
+            const errorMessage = error.data?.detail || 'Não foi possível realizar o post'
+            toast.add({ title: 'Error', description: errorMessage})
         }finally{
             loading.value = false
         }
@@ -76,23 +94,68 @@
         Conteúdos para {{ user?.username || 'Visitante' }}
         </h1>
 
-        <UButton @click="modal_is_open = true">Criar Post</UButton>
-        <UModal v-model:open="modal_is_open" title="Criar conteúdo">
-            <template #body class="bg-sky-100">
-                <div class="h-48 m-4 bg-sky-100 rounded flex items-center justify-center">
-                    <span class="text-sky-800">Form POST /posts</span>
+        <template>
+            <div>
+                
+
+                <Teleport to="body">
+                <UForm>
+                <div 
+                    v-if="isOpen" 
+                    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+                    @click="isOpen = false"
+                >
+                    
+                    <div 
+                    class="bg-white dark:bg-sky-800 rounded-lg shadow-xl w-full max-w-lg p-6 relative"
+                    @click.stop
+                    >
+                    
+                    <div class="flex justify-between items-center mb-4 border-b border-sky-200 dark:border-gray-700 pb-2">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Criar Conteúdo</h3>
+                        <UButton @click="isOpen = false" class="text-sky-500 hover:text-red-500">
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        </UButton>
+                    </div>
+
+                    <div class="mb-6">
+                        <UFormField :v-model="title" type="text" placeholder="title" class="block mb-2 text-sm font-medium text-sky-900 dark:text-white">
+                            <UInput type="text" class="border rounded w-full p-2 dark:bg-sky-500 dark:border-gray-600" placeholder="Digite o título..."/>
+                        </UFormField>
+                        <UFormField v-model="description" type="textfield" placeholder="Descrição" class="block mt-4 mb-2 text-sm font-medium text-sky-900 dark:text-white">
+                            <UInput class="border rounded w-full p-2 dark:bg-sky-500 dark:border-gray-600" rows="3"  placeholder="Digite a descrição..."/>
+                        </UFormField>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <UButton 
+                            @click="isOpen = false"
+                            class="px-4 py-2 text-sky-700 bg-sky-100 rounded hover:bg-red-400 dark:bg-sky-700 dark:text-white"
+                        >
+                        Cancelar
+                        </UButton>
+                        <UButton 
+                            class="px-4 py-2 text-white bg-sky-600 rounded hover:bg-blue-700"
+                            @click="criarPost"
+                        >
+                        Salvar
+                        </UButton>
+                    </div>
+
+                    </div>
                 </div>
-            </template>
-            <template #footer>
-                <UButton label="Cancelar" @click="modal_is_open = false" />
-            </template>
-        </UModal>
+                </UForm>
+                </Teleport>
+            </div>
+        </template>
 
-
+        <UButton label="Criar Post" @click="isOpen = true" />
         <template v-if="user">
-        <UButton @click="logout" variant="soft" class="bg-red-300">
-            Sair
-        </UButton>
+            <UButton @click="logout" variant="soft" class="bg-sky-300 border">
+                Sair
+            </UButton>
         </template>
         <template v-else>
         <UButton to="/login" color="primary">
